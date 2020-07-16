@@ -28,11 +28,22 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
 		clients.inMemory()
 					.withClient("fooddelivery-web")
-					.secret(passwordEncoder.encode("web123"))
-					.authorizedGrantTypes("password", "refresh_token")
-					.scopes("write", "read")
-					.accessTokenValiditySeconds(60 * 60 * 6)
-					.refreshTokenValiditySeconds(60 * 60 * 24 * 7);
+						.secret(passwordEncoder.encode("web123"))
+						.authorizedGrantTypes("password", "refresh_token")
+						.scopes("write", "read")
+						.accessTokenValiditySeconds(60 * 60 * 6)
+						.refreshTokenValiditySeconds(60 * 60 * 24 * 7)
+					.and()
+						.withClient("data-web")
+						.secret(passwordEncoder.encode("data123"))
+						.authorizedGrantTypes("client_credentials")
+						.scopes("read")
+					.and()
+						.withClient("data-analytics")
+						.secret(passwordEncoder.encode("analytics123"))
+						.authorizedGrantTypes("authorization_code")
+						.scopes("write", "read")
+						.redirectUris("http://client.ui.com");
 	}
 	
 	@Override
