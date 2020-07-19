@@ -31,9 +31,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	
 	@Autowired
 	private UserDetailsService userDatailsService;
-	
-//	@Autowired
-//	private RedisConnectionFactory connectionFactory;
+
+	@Autowired
+	private JwtKeyStoreProperties jwtKeyStoreProperties;  
 	
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
@@ -68,7 +68,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 			.authenticationManager(authenticationManager)
 			.userDetailsService(userDatailsService)
 			.reuseRefreshTokens(false)
-//			.tokenStore( redisTokenStore() )
 			.accessTokenConverter(jwtAccessTokenConverter())
 			.tokenGranter(tokenGranter(endpoints));
 	}
@@ -76,11 +75,10 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	@Bean
 	public JwtAccessTokenConverter jwtAccessTokenConverter() {
 		JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
-//		jwtAccessTokenConverter.setSigningKey("food8284nasn2161ASdd37127394nansbcoa244234593473delivery");
 		
-		var jksResource = new ClassPathResource("keystores/fooddeliverykey.jks");
-		var keyStorePass = "123rootE";
-		var keyPairAlias = "fooddelivery";
+		var jksResource = new ClassPathResource(jwtKeyStoreProperties.getPath());
+		var keyStorePass = jwtKeyStoreProperties.getPassword();
+		var keyPairAlias = jwtKeyStoreProperties.getKeypairAlias();
 		
 		var keyStoreKeyFactory = new KeyStoreKeyFactory(jksResource, keyStorePass.toCharArray());
 		var keyPair = keyStoreKeyFactory.getKeyPair(keyPairAlias); 
@@ -89,10 +87,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 		
 		return jwtAccessTokenConverter;
 	}
-	
-//	private TokenStore redisTokenStore() {
-//		return new RedisTokenStore(connectionFactory);
-//	}
 	
 	private TokenGranter tokenGranter(AuthorizationServerEndpointsConfigurer endpoints) {
 		var pkceAuthorizationCodeTokenGranter = new PkceAuthorizationCodeTokenGranter(endpoints.getTokenServices(),
