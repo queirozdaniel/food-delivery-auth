@@ -1,4 +1,4 @@
-package com.danielqueiroz.fooddelivery.auth;
+package com.danielqueiroz.fooddelivery.auth.core;
 
 import java.util.Collections;
 
